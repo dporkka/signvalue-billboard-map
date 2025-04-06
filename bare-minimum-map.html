@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billboard Locations Map</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #map-container {
+            padding: 10px;
+        }
+        #map-title {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+        }
+        .legend {
+            padding: 6px 8px;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            line-height: 18px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map-title">
+            <h2>Billboard Locations Map</h2>
+            <p>Click on markers to view details</p>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map
+            var map = L.map('map').setView([39.8283, -98.5795], 4);
+            
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Billboard location data
+            var billboardData = [
+                { rentSale: "Rent", address: "5829 N. Grand Blvd.", city: "Oklahoma City", state: "OK", zip: "73112", constructionType: "Digital", lat: 35.5261, lng: -97.5137 },
+                { rentSale: "Rent", address: "288 E Long St", city: "Columbus", state: "OH", zip: "43215", constructionType: "Wallscape", lat: 39.9653, lng: -82.9944 },
+                { rentSale: "Rent", address: "3919 Hwy 28 E", city: "Pineville", state: "LA", zip: "71360", constructionType: "Wallscape", lat: 31.3224, lng: -92.4063 },
+                { rentSale: "Sale", address: "301 Gander Way", city: "Palm Beach Gardens", state: "FL", zip: "33403", constructionType: "Bulletin", lat: 26.8461, lng: -80.0831 },
+                { rentSale: "Sale", address: "202 E. Hwy 80", city: "Abilene", state: "TX", zip: "79601", constructionType: "Bulletin", lat: 32.4487, lng: -99.7331 },
+                { rentSale: "Sale", address: "US 80 & SR 322", city: "Abilene", state: "TX", zip: "79601", constructionType: "Bulletin", lat: 32.4487, lng: -99.7431 },
+                { rentSale: "Sale", address: "Hwy 83 & E Spur 707", city: "Abilene", state: "TX", zip: "79602", constructionType: "Bulletin", lat: 32.4487, lng: -99.7531 },
+                { rentSale: "Sale", address: "4817 S. Treadaway", city: "Abilene", state: "TX", zip: "76902", constructionType: "Bulletin", lat: 32.4387, lng: -99.7331 },
+                { rentSale: "Sale", address: "5001 Maple Street", city: "Abilene", state: "TX", zip: "79602", constructionType: "Bulletin", lat: 32.4387, lng: -99.7431 },
+                { rentSale: "Rent", address: "Los Flores/Highway 86", city: "Brawley", state: "CA", zip: "92227", constructionType: "Poster", lat: 32.9787, lng: -115.5310 },
+                { rentSale: "Sale", address: "400 N. Orleans", city: "Chicago", state: "IL", zip: "60654", constructionType: "Wallscape", lat: 41.8882, lng: -87.6368 },
+                { rentSale: "Sale", address: "Various Cities", city: "Northwest", state: "WI", zip: "54868", constructionType: "Bulletin", lat: 45.1250, lng: -90.7048 },
+                { rentSale: "Sale", address: "Highway 98", city: "Navarre", state: "FL", zip: "32566", constructionType: "Digital", lat: 30.4044, lng: -86.8699 },
+                { rentSale: "Sale", address: "4300 SE Main St.", city: "Roswell", state: "NM", zip: "88203", constructionType: "Bulletin", lat: 33.3943, lng: -104.5230 },
+                { rentSale: "Rent", address: "", city: "Pennsylvania", state: "PA", zip: "", constructionType: "Digital", lat: 40.9699, lng: -77.7278 },
+                { rentSale: "Rent", address: "2306 Milledgeville Road", city: "Augusta", state: "GA", zip: "30901", constructionType: "Digital", lat: 33.4735, lng: -81.9747 },
+                { rentSale: "Rent", address: "15217 US Highway 19", city: "Hudson", state: "FL", zip: "34667", constructionType: "Bulletin", lat: 28.3644, lng: -82.6953 },
+                { rentSale: "Rent", address: "308 CR-3004", city: "New Boston", state: "TX", zip: "75570", constructionType: "Bulletin", lat: 33.4593, lng: -94.4143 },
+                { rentSale: "Sale", address: "10245 NW Grand Ave", city: "Sun City", state: "AZ", zip: "85351", constructionType: "Bulletin", lat: 33.6119, lng: -112.2882 },
+                { rentSale: "Sale", address: "Hwy 5", city: "Hot Springs", state: "AR", zip: "71901", constructionType: "Poster", lat: 34.5037, lng: -93.0552 },
+                { rentSale: "Rent", address: "Ulmerton Road", city: "Largo", state: "FL", zip: "33771", constructionType: "Bulletin", lat: 27.8946, lng: -82.7870 },
+                { rentSale: "Rent", address: "3429 US Rte 11", city: "Duncannon", state: "PA", zip: "17020", constructionType: "Poster", lat: 40.3919, lng: -77.0297 },
+                { rentSale: "Rent", address: "3204 Secor Rd", city: "Toledo", state: "OH", zip: "43606", constructionType: "Digital", lat: 41.6819, lng: -83.6160 },
+                { rentSale: "Rent", address: "North Central Arkansas (Hwy 65)", city: "Conway", state: "AR", zip: "72650", constructionType: "Bulletin", lat: 35.0887, lng: -92.4421 },
+                { rentSale: "Rent", address: "26569 US-371", city: "Sarepta", state: "LA", zip: "71071", constructionType: "Bulletin", lat: 32.9066, lng: -93.5143 },
+                { rentSale: "Rent", address: "5125 N Oceanshore Blvd", city: "Palm Coast", state: "FL", zip: "32137", constructionType: "Bulletin", lat: 29.6682, lng: -81.2273 },
+                { rentSale: "Rent", address: "1920 E Front Street", city: "Kansas City", state: "MO", zip: "64120", constructionType: "Bulletin", lat: 39.1239, lng: -94.5500 },
+                { rentSale: "Rent", address: "2607 San Bernardo", city: "Laredo", state: "TX", zip: "78040", constructionType: "Digital", lat: 27.5136, lng: -99.5070 },
+                { rentSale: "Rent", address: "5521 McFarland Boulevard", city: "Northport", state: "AL", zip: "35476", constructionType: "Bulletin", lat: 33.2590, lng: -87.5750 },
+                { rentSale: "Rent", address: "1815 US Hwy 17", city: "Fort Meade", state: "FL", zip: "30841", constructionType: "Bulletin", lat: 27.7522, lng: -81.7994 },
+                { rentSale: "Rent", address: "2200 S. HWY 160", city: "Pahrump", state: "NV", zip: "89048", constructionType: "Bulletin", lat: 36.2087, lng: -115.9839 },
+                { rentSale: "Sale", address: "Interstate 16 Exit 137", city: "Bulloch County", state: "GA", zip: "31308", constructionType: "Bulletin", lat: 32.4403, lng: -81.7830 },
+                { rentSale: "Sale", address: "various locations", city: "Ft. Wayne", state: "IN", zip: "46814", constructionType: "Bulletin", lat: 41.0799, lng: -85.1386 },
+                { rentSale: "Sale", address: "US2 Upper Michigan", city: "Manistique", state: "MI", zip: "49854", constructionType: "Poster", lat: 45.9577, lng: -86.2461 },
+                { rentSale: "Rent", address: "7505 Warden Rd", city: "Sherwood", state: "AR", zip: "72120", constructionType: "Bulletin", lat: 34.8151, lng: -92.1571 },
+                { rentSale: "Sale", address: "Hwy. 53 & Hwy. 14", city: "Rochester", state: "MN", zip: "54868", constructionType: "Bulletin", lat: 44.0231, lng: -92.4629 },
+                { rentSale: "Sale", address: "8225 Camper Lane", city: "Texarkana", state: "AR", zip: "71854", constructionType: "Bulletin", lat: 33.4418, lng: -94.0376 },
+                { rentSale: "Sale", address: "I-40", city: "Alma", state: "AR", zip: "72921", constructionType: "Bulletin", lat: 35.4799, lng: -94.2210 },
+                { rentSale: "Rent", address: "DC Area", city: "Washington", state: "DC", zip: "20003", constructionType: "Bulletin", lat: 38.8951, lng: -77.0364 }
+            ];
+            
+            // Use default markers for simplicity
+            billboardData.forEach(function(billboard) {
+                var marker = L.marker([billboard.lat, billboard.lng]).addTo(map);
+                
+                marker.bindPopup(
+                    "<strong>" + billboard.city + ", " + billboard.state + "</strong><br>" +
+                    "<strong>Address:</strong> " + (billboard.address || "N/A") + "<br>" +
+                    "<strong>Type:</strong> " + billboard.constructionType + "<br>" +
+                    "<strong>Status:</strong> " + billboard.rentSale + "<br>" +
+                    "<strong>ZIP:</strong> " + (billboard.zip || "N/A")
+                );
+            });
+            
+            // Add a simple legend as an overlay
+            var legend = L.control({position: 'bottomright'});
+            legend.onAdd = function(map) {
+                var div = document.createElement('div');
+                div.className = 'legend';
+                div.innerHTML = '<h4>Billboard Types</h4>' +
+                    '<div>Bulletin: ' + billboardData.filter(function(b) { return b.constructionType === 'Bulletin'; }).length + '</div>' +
+                    '<div>Digital: ' + billboardData.filter(function(b) { return b.constructionType === 'Digital'; }).length + '</div>' +
+                    '<div>Wallscape: ' + billboardData.filter(function(b) { return b.constructionType === 'Wallscape'; }).length + '</div>' +
+                    '<div>Poster: ' + billboardData.filter(function(b) { return b.constructionType === 'Poster'; }).length + '</div>';
+                return div;
+            };
+            legend.addTo(map);
+        });
+    </script>
+</body>
+</html>
